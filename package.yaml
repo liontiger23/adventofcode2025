@@ -1,10 +1,10 @@
-name:                adventofcode2024
+name:                adventofcode2025
 version:             0.1.0.0
-github:              "liontiger23/adventofcode2024"
+github:              "liontiger23/adventofcode2025"
 license:             BSD-3-Clause
 author:              "Ivan Trepakov"
 maintainer:          "liontiger23@gmail.com"
-copyright:           "Copyright (c) 2024 Ivan Trepakov"
+copyright:           "Copyright (c) 2025 Ivan Trepakov"
 
 extra-source-files:
 - README.md
@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/liontiger23/adventofcode2024#readme>
+description:         Please see the README on GitHub at <https://github.com/liontiger23/adventofcode2025#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -40,7 +40,7 @@ library:
   source-dirs: src
 
 executables:
-  adventofcode2024-exe:
+  adventofcode2025-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -48,10 +48,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - adventofcode2024
+    - adventofcode2025
 
 tests:
-  adventofcode2024-test:
+  adventofcode2025-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -59,4 +59,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - adventofcode2024
+    - adventofcode2025

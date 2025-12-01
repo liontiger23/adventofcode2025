@@ -4,14 +4,14 @@ cabal-version: 2.2
 --
 -- see: https://github.com/sol/hpack
 
-name:           adventofcode2024
+name:           adventofcode2025
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/liontiger23/adventofcode2024#readme>
-homepage:       https://github.com/liontiger23/adventofcode2024#readme
-bug-reports:    https://github.com/liontiger23/adventofcode2024/issues
+description:    Please see the README on GitHub at <https://github.com/liontiger23/adventofcode2025#readme>
+homepage:       https://github.com/liontiger23/adventofcode2025#readme
+bug-reports:    https://github.com/liontiger23/adventofcode2025/issues
 author:         Ivan Trepakov
 maintainer:     liontiger23@gmail.com
-copyright:      Copyright (c) 2024 Ivan Trepakov
+copyright:      Copyright (c) 2025 Ivan Trepakov
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -20,42 +20,18 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/liontiger23/adventofcode2024
+  location: https://github.com/liontiger23/adventofcode2025
 
 library
   exposed-modules:
       DisjointSet
       Lib
       Puzzle1
-      Puzzle10
-      Puzzle11
-      Puzzle12
-      Puzzle13
-      Puzzle14
-      Puzzle15
-      Puzzle16
-      Puzzle17
-      Puzzle18
-      Puzzle19
-      Puzzle2
-      Puzzle20
-      Puzzle21
-      Puzzle22
-      Puzzle23
-      Puzzle24
-      Puzzle25
-      Puzzle3
-      Puzzle4
-      Puzzle5
-      Puzzle6
-      Puzzle7
-      Puzzle8
-      Puzzle9
       Util
   other-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   autogen-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
@@ -67,17 +43,17 @@ library
     , split
   default-language: Haskell2010
 
-executable adventofcode2024-exe
+executable adventofcode2025-exe
   main-is: Main.hs
   other-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   autogen-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   hs-source-dirs:
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      adventofcode2024
+      adventofcode2025
     , base >=4.7 && <5
     , containers
     , mtl
@@ -85,18 +61,18 @@ executable adventofcode2024-exe
     , split
   default-language: Haskell2010
 
-test-suite adventofcode2024-test
+test-suite adventofcode2025-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   autogen-modules:
-      Paths_adventofcode2024
+      Paths_adventofcode2025
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      adventofcode2024
+      adventofcode2025
     , base >=4.7 && <5
     , containers
     , mtl
