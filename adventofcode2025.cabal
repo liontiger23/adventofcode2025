@@ -27,6 +27,7 @@ library
       DisjointSet
       Lib
       Puzzle1
+      Puzzle2
       Util
   other-modules:
       Paths_adventofcode2025
