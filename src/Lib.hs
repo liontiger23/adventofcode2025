@@ -7,7 +7,7 @@ import Util
 import Puzzle1
 import Puzzle2
 import Puzzle3
---import Puzzle4
+import Puzzle4
 --import Puzzle5
 --import Puzzle6
 --import Puzzle7
@@ -25,7 +25,7 @@ solve = do
     [Just 1, Just p] -> process (puzzle1 p)
     [Just 2, Just p] -> process (puzzle2 p)
     [Just 3, Just p] -> process (puzzle3 p)
---    [Just 4, Just p] -> process (puzzle4 p)
+    [Just 4, Just p] -> process (puzzle4 p)
 --    [Just 5, Just p] -> process (puzzle5 p)
 --    [Just 6, Just p] -> process (puzzle6 p)
 --    [Just 7, Just p] -> process (puzzle7 p)

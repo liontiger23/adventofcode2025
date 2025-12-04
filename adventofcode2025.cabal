@@ -29,6 +29,7 @@ library
       Puzzle1
       Puzzle2
       Puzzle3
+      Puzzle4
       Util
   other-modules:
       Paths_adventofcode2025
