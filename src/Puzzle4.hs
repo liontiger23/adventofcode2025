@@ -9,10 +9,20 @@ import Data.Map ((!))
 import qualified Data.Map as M
 import Data.Maybe (maybeToList)
 import Control.Monad.State
+import Data.Monoid
 
 puzzle4 :: Int -> Solution Int
 puzzle4 1 = length . evalState detectAccessible . parseInput
-puzzle4 2 = undefined
+puzzle4 2 = evalState removeRecursively . parseInput
+
+removeRecursively :: State Map Int
+removeRecursively = do
+  cs <- detectAccessible
+  modify $ appEndo $ mconcat (map (Endo . (`M.insert` '.')) cs)
+  let removed = length cs
+  if removed > 0
+  then fmap (+ removed) removeRecursively
+  else pure removed
 
 detectAccessible :: State Map [Coordinate]
 detectAccessible = do
@@ -34,8 +44,8 @@ neighbours m (x, y) =
 parseInput :: [String] -> Map
 parseInput input = M.fromList
   [ ((x, y), c)
-  | (x, l) <- zip [0..] input
-  , (y, c) <- zip [0..] l
+  | (y, l) <- zip [0..] input
+  , (x, c) <- zip [0..] l
   ]
 
 type Map = M.Map Coordinate Char
