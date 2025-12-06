@@ -5,7 +5,36 @@ module Puzzle6
     ) where
 
 import Util
+import Data.Char (isSpace)
+import Data.List (uncons)
+import Data.Maybe (fromJust)
 
 puzzle6 :: Int -> Solution Int
-puzzle6 1 = undefined
+puzzle6 1 = sum . map calc . parseInput . reverse . map skipSpaces
 puzzle6 2 = undefined
+
+parseInput :: [[String]] -> [Equation]
+parseInput ([] : _) = []
+parseInput ((op:ops) : args) = eq : parseInput (ops : map snd args')
+ where
+  args' = fromJust $ mapM uncons args
+  eq = case op of
+    "+" -> Add $ map (read . fst) args'
+    "*" -> Mul $ map (read . fst) args'
+
+calc :: Equation -> Int
+calc (Add xs) = sum xs
+calc (Mul xs) = product xs
+
+data Equation = Add [Int] | Mul [Int]
+
+-- >>> skipSpaces "   123 3241  234 "
+-- ["123","3241","234"]
+skipSpaces :: String -> [String]
+skipSpaces = go ""
+ where
+  go ""  [] = []
+  go acc [] = [acc]
+  go acc (x : xs)
+    | isSpace x = if null acc then go "" xs else acc : go "" xs
+    | otherwise = go (acc ++ [x]) xs
