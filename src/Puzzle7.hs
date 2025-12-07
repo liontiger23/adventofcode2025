@@ -9,6 +9,7 @@ import Data.Map ((!))
 import qualified Data.Map as M
 import Control.Monad.State
 import Data.List (nub, partition)
+import Data.Monoid (Endo(..))
 
 puzzle7 :: Int -> Solution Int
 puzzle7 1 = length . evalState (propagateBeams . (: []) . startCoordinate =<< get) . parseInput
@@ -21,7 +22,10 @@ propagateBeams cs = do
   let downCS = filter (`M.member` m) $ map (\(x, y) -> (x, y + 1)) cs
       (splitCS, nextDownCS) = partition ((== '^') . (m !)) downCS
       nextCS = nub $ nextDownCS ++ concatMap (filter (`M.member` m) . (\(x, y) -> [(x - 1, y), (x + 1, y)])) splitCS
-  if null downCS
+  modify (appEndo $ mconcat $ map (Endo . (`M.insert` '|')) nextCS)
+  modify (appEndo $ mconcat $ map (Endo . (`M.insert` 'X')) splitCS)
+  m' <- get
+  if null downCS && debug (showMap m') True
   then pure []
   else (splitCS ++) <$> propagateBeams nextCS
 
@@ -35,6 +39,13 @@ parseInput input = M.fromList
   | (y, l) <- zip [0..] input
   , (x, c) <- zip [0..] l
   ]
+
+showMap :: Map -> String
+showMap m = unlines
+  [ [ m ! (x, y) | x <- [0..nx] ]
+  | y <- [0..ny] ]
+ where
+  (nx, ny) = fst $ M.findMax m
 
 type Map = M.Map Coordinate Char
 
