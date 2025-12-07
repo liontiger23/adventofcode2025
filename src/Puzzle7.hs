@@ -10,10 +10,11 @@ import qualified Data.Map as M
 import Control.Monad.State
 import Data.List (nub, partition)
 import Data.Monoid (Endo(..))
+import Data.Maybe (fromMaybe)
 
 puzzle7 :: Int -> Solution Int
 puzzle7 1 = length . evalState (propagateBeams . (: []) . startCoordinate =<< get) . parseInput
-puzzle7 2 = undefined
+puzzle7 2 = maximum . countBeams . execState (propagateBeams . (: []) . startCoordinate =<< get) . parseInput
 
 -- returns coordinates of splits
 propagateBeams :: [Coordinate] -> State Map [Coordinate]
@@ -32,6 +33,18 @@ propagateBeams cs = do
 startCoordinate :: Map -> Coordinate
 startCoordinate m = case M.keys (M.filter (== 'S') m) of
   [c] -> c
+
+countBeams :: Map -> M.Map Coordinate Int
+countBeams m = countM
+ where
+  countM :: M.Map Coordinate Int
+  countM = M.mapWithKey countC m
+  countC :: Coordinate -> Char -> Int
+  countC (x, y) '|' = fromMaybe 1 $ M.lookup (x, y + 1) countM
+  countC (x, y) 'X' = countM ! (x - 1, y) + countM ! (x + 1, y)
+  countC (x, y) 'S' = countM ! (x, y + 1)
+  countC _      '.' = 0
+  countC _      '^' = 0
 
 parseInput :: [String] -> Map
 parseInput input = M.fromList
