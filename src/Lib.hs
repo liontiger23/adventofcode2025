@@ -11,7 +11,7 @@ import Puzzle4
 import Puzzle5
 import Puzzle6
 import Puzzle7
---import Puzzle8
+import Puzzle8
 --import Puzzle9
 --import Puzzle10
 --import Puzzle11
@@ -29,7 +29,7 @@ solve = do
     [Just 5, Just p] -> process (puzzle5 p)
     [Just 6, Just p] -> process (puzzle6 p)
     [Just 7, Just p] -> process (puzzle7 p)
---    [Just 8, Just p] -> process (puzzle8 p)
+    [Just 8, Just p] -> process (puzzle8 p)
 --    [Just 9, Just p] -> process (puzzle9 p)
 --    [Just 10, Just p] -> process (puzzle10 p)
 --    [Just 11, Just p] -> process (puzzle11 p)
