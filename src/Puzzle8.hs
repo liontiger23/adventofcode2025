@@ -12,10 +12,12 @@ import qualified DisjointSet as DS
 import Data.List (sortOn, sortBy)
 import Control.Monad.State
 import Data.Ord (comparing, Down (..))
+import Data.Monoid (First(..))
+import Data.Maybe (fromJust)
 
 puzzle8 :: Int -> Solution Int
 puzzle8 1 = product . take 3 . sortBy (comparing Down) . map length . DS.equivalenceClasses . connectN 1000 . dists . map parseCoordinate
-puzzle8 2 = undefined
+puzzle8 2 = (\((x1, _, _), (x2, _, _)) -> x1 * x2) . connectUntilFull . dists. map parseCoordinate
 
 connectN :: Int -> M.Map (Coordinate, Coordinate) Int -> DisjointSet Coordinate
 connectN n m = execState (mapM_ connect $ take n $ map fst sorted) $ DS.fromList allCoords
@@ -24,10 +26,21 @@ connectN n m = execState (mapM_ connect $ take n $ map fst sorted) $ DS.fromList
   sorted :: [((Coordinate, Coordinate), Int)]
   sorted = sortOn snd $ M.toList m
 
-connect :: (Coordinate, Coordinate) -> State (DisjointSet Coordinate) ()
+connectUntilFull :: M.Map (Coordinate, Coordinate) Int -> (Coordinate, Coordinate)
+connectUntilFull m = fromJust $ getFirst $ mconcat $ map First $ evalState (mapM (connect . fst) sorted) $ DS.fromList allCoords
+ where
+  allCoords = concatMap (\(x, y) -> [x, y]) $ M.keys m
+  sorted :: [((Coordinate, Coordinate), Int)]
+  sorted = sortOn snd $ M.toList m
+
+connect :: (Coordinate, Coordinate) -> State (DisjointSet Coordinate) (Maybe (Coordinate, Coordinate))
 connect (x, y) = do
   modify (DS.insert x . DS.insert y)
   DS.unionS x y
+  ds <- get
+  pure $ if length (DS.representatives ds) == 1
+         then Just (x, y)
+         else Nothing
 
 
 dists :: [Coordinate] -> M.Map (Coordinate, Coordinate) Int
