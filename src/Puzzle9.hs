@@ -48,11 +48,11 @@ filled m r = all (\(HSegm y lr) -> contains lr (m ! y)) $ rectLines r
 
 
 fillLines :: [Coordinate] -> TileRanges
-fillLines cs = execState
-  (  mapM_ collectV segs
-  >> modify (M.map (fillRanges . sort))
-  >> mapM_ fillH segs
-  >> modify (M.map (joinRanges . sort))
+fillLines cs = execState (do
+    mapM_ collectV segs
+    modify (M.map (fillRanges . sort))
+    mapM_ fillH segs
+    modify (M.map (joinRanges . sort))
   ) M.empty
  where
   segs = path cs
