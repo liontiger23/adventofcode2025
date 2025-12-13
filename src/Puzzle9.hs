@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Puzzle9
     ( puzzle9
@@ -11,11 +12,12 @@ import Data.Ix
 import Data.Map ((!))
 import qualified Data.Map.Strict as M
 import Control.Monad.State
-import Data.List (sort)
+import Data.List (sort, nubBy, groupBy, sortBy)
+import Data.Function (on)
 
 puzzle9 :: Int -> Solution Int
 puzzle9 1 = maximum . map area . allRects . map parseCoordinate
-puzzle9 2 = maximum . map area . allFilledRects . map parseCoordinate
+puzzle9 2 = maxFilledArea . map parseCoordinate
 
 allRects :: [Coordinate] -> [Rect]
 allRects cs = [rect a b | a <- cs, b <- cs]
@@ -25,7 +27,7 @@ allRects cs = [rect a b | a <- cs, b <- cs]
 rect :: Coordinate -> Coordinate -> Rect
 rect (x1, y1) (x2, y2) = Rect (y1 `max` y2) (x1 `max` x2) (y1 `min` y2) (x1 `min` x2)
 
-data Rect = Rect Int Int Int Int
+data Rect = Rect !Int !Int !Int !Int
   deriving Show
 
 -- >>> area $ rect (2,5) (9,7)
@@ -38,27 +40,32 @@ parseCoordinate input = case map read (splitOn "," input) of [x, y] -> (x, y)
 
 type Coordinate = (Int, Int)
 
-allFilledRects :: [Coordinate] -> [Rect]
-allFilledRects cs = filter (filled tiles) $ allRects cs
+maxFilledArea :: [Coordinate] -> Int
+maxFilledArea cs = tiles `seq` area $ head $ filter (filled tiles) $ sortBy (compare `on` (\r -> -area r)) $ allRects cs
  where
   tiles = fillLines cs
 
 filled :: TileRanges -> Rect -> Bool
-filled m r = all (\(HSegm y lr) -> contains lr (m ! y)) $ rectLines r
+filled m (Rect n e s w) = and [any subrange2 (m ! y) | y <- [s..n], M.member y m]
+ where
+  subrange2 r = inRange r w && inRange r e
 
 
 fillLines :: [Coordinate] -> TileRanges
 fillLines cs = execState (do
-    mapM_ collectV segs
+    put (M.fromAscList vlist)
     modify (M.map (fillRanges . sort))
     mapM_ fillH segs
     modify (M.map (joinRanges . sort))
+    modify (M.fromAscList . nubBy ((==) `on` snd) . M.toAscList)
   ) M.empty
  where
   segs = path cs
-  collectV :: Segm -> State TileRanges ()
-  collectV (HSegm _ _) = pure ()
-  collectV (VSegm x r) = mapM_ (\y -> modify (M.insertWith (++) y [(x,x)])) (init $ range r)
+  vpoints = concatMap (\case
+      HSegm _ _ -> []
+      VSegm x r -> [(x,y) | y <- init $ range r]
+    ) segs
+  vlist = map (\ps@((_, y) : _) -> (y, map (\(x, _) -> (x,x)) ps)) $ groupBy ((==) `on` snd) $ sortBy (compare `on` snd) vpoints
   fillH :: Segm -> State TileRanges ()
   fillH (HSegm y r) = modify (M.insertWith (++) y [r])
   fillH (VSegm _ _) = pure ()
@@ -82,22 +89,13 @@ intersects d (l, r) = inRange d l || inRange d r
 
 type TileRanges = M.Map Int [Range]
 
-contains :: Range -> [Range] -> Bool
-contains r = any (subrange r)
-
-subrange :: Range -> Range -> Bool
-subrange (l1, r1) r = inRange r l1 && inRange r r1
-
 type Range = (Int, Int)
 
 path :: [Coordinate] -> [Segm]
 path (c : cs) = zipWith segm (c : cs) (cs ++ [c])
 
-data Segm = VSegm Int Range | HSegm Int Range
+data Segm = VSegm !Int !Range | HSegm !Int !Range
   deriving (Show, Eq)
-
-rectLines :: Rect -> [Segm]
-rectLines (Rect n e s w) = [ HSegm y (w, e) | y <- [s..n] ]
 
 segm :: Coordinate -> Coordinate -> Segm
 segm (x1, y1) (x2, y2)
