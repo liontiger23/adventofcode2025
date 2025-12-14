@@ -27,6 +27,7 @@ library
       DisjointSet
       Lib
       Puzzle1
+      Puzzle10
       Puzzle2
       Puzzle3
       Puzzle4
