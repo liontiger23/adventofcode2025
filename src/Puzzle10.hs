@@ -12,10 +12,11 @@ import Data.Map ((!))
 import qualified Data.Map as M
 import Control.Monad.State
 import Control.Monad (forM_)
+import Data.Maybe (fromJust, maybeToList, mapMaybe)
 
 puzzle10 :: Int -> Solution Int
 puzzle10 1 = sum . map (length . calcIndicatorPresses . parseMachine)
-puzzle10 2 = undefined
+puzzle10 2 = sum . map (calcJoltagePresses . parseMachine)
 
 calcIndicatorPresses :: Machine -> [Button]
 calcIndicatorPresses (Machine _ target buttons _) = execState go initState ! target
@@ -42,6 +43,44 @@ pressIndicators i b = unmasked .|. masked
  where
   unmasked = i .&. complement b
   masked = (i .^. b) .&. b
+
+calcJoltagePresses :: Machine -> Int
+calcJoltagePresses (Machine n _ buttons target) = fromJust $ calcFrom target
+ where
+  enum = enumButtonPresses n buttons
+  calcFrom :: [Joltage] -> Maybe Int
+  calcFrom js
+    | all (== 0) js = Just 0
+    | any (<0) js = Nothing
+    | any odd  js = safeMinimum enumChoices
+    | otherwise   = safeMinimum (maybeToList ((2 *) <$> calcFrom (jdiv 2 js)) ++ enumChoices)
+   where
+    enumChoices = mapMaybe (\(js', k) -> (\r -> k + 2 * r) <$> calcFrom (jdiv 2 js')) choices
+    choices = mapMaybe (\(ps, k) -> let js' = js `jsub` ps in if all even js' then Just (js', k) else Nothing) $ M.toList enum
+
+jsub :: [Joltage] -> [Joltage] -> [Joltage]
+jsub = zipWith (-)
+
+jdiv :: Int -> [Joltage] -> [Joltage]
+jdiv k = map (`div` k)
+
+safeMinimum :: (Ord a) => [a] -> Maybe a
+safeMinimum [] = Nothing
+safeMinimum xs = Just $ minimum xs
+
+enumButtonPresses :: Int -> [Button] -> M.Map [Joltage] Int
+enumButtonPresses _ [] = M.empty
+enumButtonPresses n (b : bs) = M.unionWith min bsEnum bbsEnum
+ where
+  bsEnum = enumButtonPresses n bs
+  bbsEnum = M.fromList $ (pressJoltages (zeroJoltages n) b, 1) : map (\(j, k) -> (pressJoltages j b, k + 1)) (M.toList bsEnum)
+
+pressJoltages :: [Joltage] -> Button -> [Joltage]
+pressJoltages js 0 = js
+pressJoltages (j : js) b = j + b .&. 1 : pressJoltages js (shiftR b 1)
+
+zeroJoltages :: Int -> [Joltage]
+zeroJoltages n = replicate n 0
 
 parseMachine :: String -> Machine
 parseMachine input = case stripHeadAndLast (splitOn " " $ filter (not . (`elem` "[](){}")) input) of
